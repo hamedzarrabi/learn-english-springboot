@@ -25,25 +25,29 @@ public class JwtTokenUtil {
 
     private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; //24h
 
+
     @Value("@{app.jwt.secret}")
-    private String secretKey;
+    private String secretkey;
 
     public String generateAccessToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getId() + "," + user.getEmail())
                 .claim("roles", user.getRoles().toString())
-                .setIssuer("tabasomGhobadi")
+                .setIssuer("codeJava")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .signWith(SignatureAlgorithm.HS512, secretkey)
                 .compact();
+
     }
 
     public boolean validateAccessToken(String token) {
+
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretkey).parseClaimsJws(token);
 
             return true;
+
         } catch (ExpiredJwtException e) {
             LOGGER.error("JWT expired", e);
         } catch (IllegalArgumentException e) {
@@ -59,13 +63,14 @@ public class JwtTokenUtil {
         return false;
     }
 
+
     public String getSubject(String token) {
         return parseClaims(token).getSubject();
     }
 
     public Claims parseClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(secretkey)
                 .parseClaimsJws(token)
                 .getBody();
     }

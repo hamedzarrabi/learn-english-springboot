@@ -76,6 +76,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @RolesAllowed("ROLE_ADMIN")
     public ResponseEntity<List<User>> findAllUser() {
 
         List<User> user =  userService.findAllUser();
@@ -104,7 +105,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody  AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody @Valid  AuthRequest request) {
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));

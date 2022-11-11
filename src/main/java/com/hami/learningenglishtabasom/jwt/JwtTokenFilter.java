@@ -21,10 +21,12 @@ import java.io.IOException;
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    @Autowired private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         if (!hasAuthorizationHeader(request)) {
             filterChain.doFilter(request, response);
@@ -39,12 +41,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
+
         setAuthenticationContext(accessToken, request);
         filterChain.doFilter(request, response);
+
     }
 
     private void setAuthenticationContext(String accessToken, HttpServletRequest request) {
+
         UserDetails userDetails = getUserDetails(accessToken);
+
         UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -59,11 +65,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         Claims claims = jwtTokenUtil.parseClaims(accessToken);
 
+
         String claimRoles = (String) claims.get("roles");
 
-        System.out.println("ClaimsRole: " + claimRoles);
+        System.out.println("claimsRole: " + claimRoles);
 
         claimRoles = claimRoles.replace("[", "").replace("]", "");
+
         String[] roleNames = claimRoles.split(",");
 
         for (String aRoleName : roleNames) {
@@ -80,7 +88,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return userDetail;
     }
 
-    public boolean hasAuthorizationHeader(HttpServletRequest request) {
+    private boolean hasAuthorizationHeader(HttpServletRequest request) {
 
         String header = request.getHeader("Authorization");
         System.out.println("Authorization header: " + header);
@@ -98,4 +106,5 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         System.out.println("Access Token: " + token);
         return token;
     }
+
 }
