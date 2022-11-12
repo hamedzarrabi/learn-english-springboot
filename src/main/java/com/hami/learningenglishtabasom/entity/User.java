@@ -38,6 +38,25 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ClassRoom> classRooms = new HashSet<>();
 
+    public Set<ClassRoom> getClassRooms() {
+        return classRooms;
+    }
+
+    public User(Long id, String firstName, String lastName, String email, String phone, String password, Set<ClassRoom> classRooms, Set<Role> roles) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.classRooms = classRooms;
+        this.roles = roles;
+    }
+
+    public void setClassRooms(Set<ClassRoom> classRooms) {
+        this.classRooms = classRooms;
+    }
+
     @ManyToMany
     @JoinTable(
             name = "users_roles",
