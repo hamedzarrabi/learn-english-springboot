@@ -40,7 +40,6 @@ public class Customer implements Serializable {
 
 	public void setCustomerCode(String string) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

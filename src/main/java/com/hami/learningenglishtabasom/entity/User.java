@@ -35,7 +35,8 @@ public class User implements UserDetails {
 
     private String password;
 
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<ClassRoom> classRooms = new HashSet<>();
 
     @ManyToMany
     @JoinTable(

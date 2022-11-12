@@ -18,11 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+
 
 
 @RestController
@@ -31,6 +30,8 @@ public class UserController {
 
     @Autowired
     private final UserService userService;
+
+    private AuthResponse authResponse;
 
     @Autowired
     private UserRepository userRepository;
@@ -76,7 +77,6 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    @RolesAllowed("ROLE_ADMIN")
     public ResponseEntity<List<User>> findAllUser() {
 
         List<User> user =  userService.findAllUser();
@@ -90,20 +90,6 @@ public class UserController {
     }
 
 
-    record LogoutResponse(String message){}
-
-    @PostMapping(value = "/logout")
-    public LogoutResponse logout(HttpServletResponse response) {
-
-        Cookie cookie = new Cookie("refresh_token", null);
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-
-        response.addCookie(cookie);
-
-        return new LogoutResponse("success");
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid  AuthRequest request) {
 
@@ -114,7 +100,8 @@ public class UserController {
                     User user = (User) authentication.getPrincipal();
 
                     String accessToken = jwtTokenUtil.generateAccessToken(user);
-            AuthResponse response = new AuthResponse(user.getEmail(), accessToken);
+
+            AuthResponse response = new AuthResponse(user.getEmail(), accessToken, user.getRoles().toString());
 
             return ResponseEntity.ok(response);
 
